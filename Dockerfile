@@ -6,13 +6,11 @@ RUN apt-get update \
     tightvncserver \
   && rm -rf /var/lib/apt/lists/*
 
-
-# https://packages.ubuntu.com/xenial/xubuntu-core
-# indicator-application
-# indicator-sound
-# pavucontrol
-# policykit-desktop-privileges
-
+RUN add-apt-repository ppa:obsproject/obs-studio \
+  && apt-get update \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-suggests \
+    obs-studio \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN touch /root/.Xresources
 COPY xstartup /root/.vnc/xstartup
