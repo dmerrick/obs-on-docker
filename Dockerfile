@@ -1,7 +1,7 @@
 FROM ubuntu
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-  && apt-get install -y --no-install-suggests \
+RUN apt-get update \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-suggests \
     xubuntu-desktop \
     tightvncserver \
   && rm -rf /var/lib/apt/lists/*
