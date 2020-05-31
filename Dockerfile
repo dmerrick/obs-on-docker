@@ -5,18 +5,14 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get install -y software-properties-common \
     && add-apt-repository ppa:obsproject/obs-studio \
-    && add-apt-repository ppa:graphics-drivers/ppa \
     && apt-get update \
     && apt-get install -y \
-      obs-studio \
-      nvidia-418 \
       ubuntu-drivers-common \
+      nvidia-driver-390 \
+      obs-studio \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
-
-    # && ubuntu-drivers autoinstall \
-      #nvidia-driver-396 \
 # add OBS to the right-click menu
 RUN echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"obs\"" >> /usr/share/menu/custom-docker && update-menus
 
