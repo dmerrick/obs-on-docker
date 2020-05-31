@@ -1,31 +1,19 @@
-FROM ubuntu
+FROM bandi13/gui-docker
 
-RUN apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-suggests \
-    ffmpeg \
-    xubuntu-core \
-    tightvncserver \
-  && rm -rf /var/lib/apt/lists/*
+# install OBS
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && apt-get update \
+    && apt-get install -y software-properties-common \
+    && add-apt-repository ppa:obsproject/obs-studio \
+    && apt-get update \
+    && apt-get install -y obs-studio \
+    && apt-get clean -y
+    && rm -rf /var/lib/apt/lists/*
 
+# add OBS to the right-click menu
+RUN echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"obs\"" >> /usr/share/menu/custom-docker && update-menus
 
-# xfce4-goodies?
-
-RUN add-apt-repository ppa:obsproject/obs-studio \
-  && apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-suggests \
-    obs-studio \
-  && rm -rf /var/lib/apt/lists/*
-
-RUN touch /root/.Xresources
-COPY vnc/xstartup /root/.vnc/xstartup
-RUN chmod +x /root/.vnc/xstartup
-#COPY vnc/passwd /root/.vnc/passwd
-RUN printf "password\npassword\n\n" | vncpasswd
-
-
-
-WORKDIR /data
-CMD ["bash"]
-
-# expose VNC port
-EXPOSE 5901
+# set up stream key
+RUN mkdir -p /root/.config/obs-studio/basic/profiles/Untitled/
+COPY obs-profile/basic.ini /root/.config/obs-studio/basic/profiles/Untitled
+COPY obs-profile/service.json /root/.config/obs-studio/basic/profiles/Untitled

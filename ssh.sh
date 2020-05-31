@@ -7,4 +7,4 @@ NAME="$1"
 docker exec -it \
   -e USER=root \
   $NAME \
-  bash #cat /root/.vnc/passwd
+  bash
