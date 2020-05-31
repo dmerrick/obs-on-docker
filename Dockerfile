@@ -1,19 +1,16 @@
 FROM bandi13/gui-docker
 
-# install OBS
+# install dependencies
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
-    && apt-get install -y software-properties-common \
-    && add-apt-repository ppa:obsproject/obs-studio \
-    && apt-get update \
     && apt-get install -y \
-      ubuntu-drivers-common \
-      obs-studio \
-      wget \
-      nasm \
-      make \
       gcc \
+      make \
+      nasm \
+      software-properties-common \
+      ubuntu-drivers-common \
       unzip \
+      wget \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
@@ -21,6 +18,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 # nvidia-driver-435 - distro non-free
 # nvidia-driver-390 - distro non-free
 
+# install nv-codec-headers
 RUN cd /tmp \
   && wget https://github.com/FFmpeg/nv-codec-headers/archive/master.zip \
   && unzip master.zip \
@@ -28,18 +26,35 @@ RUN cd /tmp \
   && make \
   && make install
 
+# RUN cd /tmp \
+#   && wget https://github.com/FFmpeg/x264/archive/master.zip \
+#   && unzip master.zip \
+#   && cd x264-master \
+#   && ./configure --enable-static \
+#   && make \
+#   && make install
+
+# compile ffmpeg
 RUN cd /tmp \
   && wget https://ffmpeg.org/releases/ffmpeg-4.2.3.tar.bz2 \
   && tar xvf ffmpeg-4.2.3.tar.bz2 \
   && cd ffmpeg-4.2.3 \
   && ./configure \
     --enable-nvenc \
-    --enable-nonfree \
-    --enable-gpl \
-    --enable-shared \
-    --enable-libx264 \
   && make \
   && make install
+    # --enable-shared \
+    # --enable-nonfree \
+    # --enable-gpl \
+    # --enable-libx264 \
+
+# install obs
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && add-apt-repository ppa:obsproject/obs-studio \
+    && apt-get update \
+    && apt-get install -y obs-studio \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
 
 # add OBS to the right-click menu
 RUN echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"obs\"" >> /usr/share/menu/custom-docker && update-menus
