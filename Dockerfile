@@ -10,6 +10,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
       software-properties-common \
       ubuntu-drivers-common \
       unzip \
+      sudo \
       wget \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
@@ -19,12 +20,12 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 # nvidia-driver-390 - distro non-free
 
 # install nv-codec-headers
-RUN cd /tmp \
-  && wget https://github.com/FFmpeg/nv-codec-headers/archive/master.zip \
-  && unzip master.zip \
-  && cd nv-codec-headers-master \
-  && make \
-  && make install
+# RUN cd /tmp \
+#   && wget https://github.com/FFmpeg/nv-codec-headers/archive/master.zip \
+#   && unzip master.zip \
+#   && cd nv-codec-headers-master \
+#   && make \
+#   && make install
 
 # RUN cd /tmp \
 #   && wget https://github.com/FFmpeg/x264/archive/master.zip \
@@ -35,26 +36,34 @@ RUN cd /tmp \
 #   && make install
 
 # compile ffmpeg
-RUN cd /tmp \
-  && wget https://ffmpeg.org/releases/ffmpeg-4.2.3.tar.bz2 \
-  && tar xvf ffmpeg-4.2.3.tar.bz2 \
-  && cd ffmpeg-4.2.3 \
-  && ./configure \
-    --enable-nvenc \
-  && make \
-  && make install
+# RUN cd /tmp \
+#   && wget https://ffmpeg.org/releases/ffmpeg-4.2.3.tar.bz2 \
+#   && tar xvf ffmpeg-4.2.3.tar.bz2 \
+#   && cd ffmpeg-4.2.3 \
+#   && ./configure \
+#     --enable-nvenc \
+#   && make \
+#   && make install
     # --enable-shared \
     # --enable-nonfree \
     # --enable-gpl \
     # --enable-libx264 \
 
 # install obs
+# RUN export DEBIAN_FRONTEND=noninteractive \
+#     && add-apt-repository ppa:obsproject/obs-studio \
+#     && apt-get update \
+#     && apt-get install -y obs-studio \
+#     && apt-get clean -y \
+#     && rm -rf /var/lib/apt/lists/*
+
+COPY ffmpeg-build.sh /root/
+COPY Video_Codec_SDK_9.1.23.zip /root/
 RUN export DEBIAN_FRONTEND=noninteractive \
-    && add-apt-repository ppa:obsproject/obs-studio \
-    && apt-get update \
-    && apt-get install -y obs-studio \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
+  && apt-get update \
+  && cd /root \
+  && chmod +x ./ffmpeg-build.sh \
+  && ./ffmpeg-build.sh --dest /opt/ffmpeg-nvenc
 
 # add OBS to the right-click menu
 RUN echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"obs\"" >> /usr/share/menu/custom-docker && update-menus

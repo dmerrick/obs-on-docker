@@ -71,7 +71,7 @@ InstallDependenciesOpenSUSE() {
 
 InstallNvidiaSDK() {
     echo "Installing the NVidia Video SDK"
-    sdk_version="9.0.20"
+    sdk_version="9.1.23"
     sdk_basename="Video_Codec_SDK_${sdk_version}"
     cd "$source_dir"
     if [ ! -f "${sdk_basename}.zip" ]; then
@@ -183,7 +183,7 @@ BuildVpx() {
 BuildFFmpeg() {
     echo "Compiling ffmpeg"
     cd $source_dir
-    ffmpeg_version="4.1.1"
+    ffmpeg_version="4.2.3"
     if [ ! -f  ffmpeg-${ffmpeg_version}.tar.bz2 ]; then
         wget -4 http://ffmpeg.org/releases/ffmpeg-${ffmpeg_version}.tar.bz2
     fi
