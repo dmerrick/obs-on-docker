@@ -4,6 +4,8 @@ FROM jrottenberg/ffmpeg:4.2-nvidia-cuda9.2
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get install -y \
+      build-essential \
+      cmake \
       fluxbox \
       git \
       net-tools \
@@ -13,6 +15,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
       software-properties-common \
       tigervnc-standalone-server \
       ubuntu-drivers-common \
+      qtbase5-dev \
       vim \
       xterm \
     && apt-get clean -y \
@@ -38,13 +41,22 @@ ENV VNC_PASSWD=123456
 RUN echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"Xterm\" command=\"xterm -ls -bg black -fg white\"" >> /usr/share/menu/custom-docker && update-menus
 
 # install obs
-RUN export DEBIAN_FRONTEND=noninteractive \
-    && add-apt-repository ppa:obsproject/obs-studio \
-    && apt-get update \
-    && apt-get install -y obs-studio \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
+# RUN export DEBIAN_FRONTEND=noninteractive \
+#     && add-apt-repository ppa:obsproject/obs-studio \
+#     && apt-get update \
+#     && apt-get install -y obs-studio \
+#     && apt-get clean -y \
+#     && rm -rf /var/lib/apt/lists/*
 
+RUN cd /tmp \
+  && git clone https://github.com/obsproject/obs-studio \
+  && mkdir -p obs-studio/build \
+  && cd obs-studio/build \
+  && FFmpegPath=/usr/local/bin/ffmpeg cmake -DUNIX_STRUCTURE=1 -DCMAKE_INSTALL_PREFIX=/usr/local .. \
+  && make -j4 \
+  && make install
+  # && LD_LIBRARY_PATH="/usr/lib:${LD_LIBRARY_PATH}" cmake -DUNIX_STRUCTURE=1 -DCMAKE_INSTALL_PREFIX=/usr .. \
+  # && LD_LIBRARY_PATH=/usr/local/lib FFMPEG_INCLUDE_DIRS="/opt/ffmpeg/lib:/opt/ffmpeg/lib64" cmake -DUNIX_STRUCTURE=1 -DCMAKE_INSTALL_PREFIX=/usr/local .. \
 # add OBS to the right-click menu
 RUN echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"obs\"" >> /usr/share/menu/custom-docker && update-menus
 
