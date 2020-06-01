@@ -57,7 +57,7 @@ InstallDependencies() {
         libjack-jackd2-dev libxcomposite-dev x11proto-composite-dev \
         libx264-dev libgl1-mesa-dev libglu1-mesa-dev libasound2-dev \
         libpulse-dev libx11-dev libxext-dev libxfixes-dev \
-        libxi-dev qt5-default qttools5-dev qt5-qmake qtbase5-dev
+        libxi-dev qt5-default qttools5-dev qt5-qmake qtbase5-dev libqt5svg5-dev
 }
 
 # TODO Detect running system
@@ -350,22 +350,22 @@ EOF
     fi
 }
 
-MakeLauncherOBS() {
-    cat <<EOF > ~/.local/share/applications/obs.desktop
-[Desktop Entry]
-Version=1.0
-Name=OBS Studio
-Comment=OBS Studio (NVenc enabled)
-Categories=Video;
-Exec=${build_dir}/scripts/obs.sh %U
-Icon=obs
-Terminal=false
-Type=Application
-EOF
-    mkdir -p ~/.icons
-    cp ${root_dir}/media/obs.png ~/.icons
-    gtk-update-icon-cache -t ~/.icons
-}
+# MakeLauncherOBS() {
+#     cat <<EOF > ~/.local/share/applications/obs.desktop
+# [Desktop Entry]
+# Version=1.0
+# Name=OBS Studio
+# Comment=OBS Studio (NVenc enabled)
+# Categories=Video;
+# Exec=${build_dir}/scripts/obs.sh %U
+# Icon=obs
+# Terminal=false
+# Type=Application
+# EOF
+#     mkdir -p ~/.icons
+#     cp ${root_dir}/media/obs.png ~/.icons
+#     gtk-update-icon-cache -t ~/.icons
+# }
 
 if [ $1 ]; then
     $1
@@ -382,7 +382,7 @@ else
     BuildFFmpeg
     if [ "$build_obs" ]; then
         BuildOBS
-        MakeLauncherOBS
+        # MakeLauncherOBS
     fi
 
     MakeScripts
