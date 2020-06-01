@@ -1,0 +1,57 @@
+FROM jrottenberg/ffmpeg:4.2-nvidia-cuda9.2
+
+# install dependencies
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && apt-get update \
+    && apt-get install -y \
+      ubuntu-drivers-common \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
+
+# nvidia-driver-440 - distro non-free recommended
+# nvidia-driver-435 - distro non-free
+# nvidia-driver-390 - distro non-free
+
+# for the VNC connection
+EXPOSE 5900
+# for the browser VNC client
+EXPOSE 5901
+# Use environment variable to allow custom VNC passwords
+ENV VNC_PASSWD=123456
+
+# Make sure the dependencies are met
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt install -y tigervnc-standalone-server fluxbox xterm git net-tools python python-numpy scrot && rm -rf /var/lib/apt/lists/*
+
+# Install VNC. Requires net-tools, python and python-numpy
+RUN git clone --branch v1.0.0 --single-branch https://github.com/novnc/noVNC.git /opt/noVNC
+RUN git clone --branch v0.8.0 --single-branch https://github.com/novnc/websockify.git /opt/noVNC/utils/websockify
+RUN ln -s /opt/noVNC/vnc.html /opt/noVNC/index.html
+
+# Add menu entries to the container
+RUN echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"Xterm\" command=\"xterm -ls -bg black -fg white\"" >> /usr/share/menu/custom-docker && update-menus
+
+# install obs
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && add-apt-repository ppa:obsproject/obs-studio \
+    && apt-get update \
+    && apt-get install -y obs-studio \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
+
+# add OBS to the right-click menu
+RUN echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"obs\"" >> /usr/share/menu/custom-docker && update-menus
+
+# set up stream key and scenes
+RUN mkdir -p /root/.config/obs-studio/basic/profiles/Untitled/ /root/.config/obs-studio/basic/scenes/
+COPY obs-profile/basic.ini /root/.config/obs-studio/basic/profiles/Untitled
+COPY obs-profile/service.json /root/.config/obs-studio/basic/profiles/Untitled
+COPY Dashcam_Scenes.linux.json /root/.config/obs-studio/basic/scenes/Untitled.json
+#TODO: instead of naming these both Untitled, edit ~/.config/obs-studio/global.ini
+
+# Copy various files to their respective places
+COPY container_startup.sh /opt/container_startup.sh
+COPY x11vnc_entrypoint.sh /opt/x11vnc_entrypoint.sh
+# Subsequent images can put their scripts to run at startup here
+RUN mkdir /opt/startup_scripts
+
+ENTRYPOINT ["/opt/container_startup.sh"]
