@@ -57,13 +57,13 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get clean -y \
 #     && rm -rf /var/lib/apt/lists/*
 
-COPY ffmpeg-build.sh /root/
 COPY Video_Codec_SDK_9.1.23.zip /root/
+COPY ffmpeg-build.sh /root/
 RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
   && cd /root \
   && chmod +x ./ffmpeg-build.sh \
-  && ./ffmpeg-build.sh --dest /opt/ffmpeg-nvenc
+  && ./ffmpeg-build.sh --dest /opt/ffmpeg-nvenc --obs
 
 # add OBS to the right-click menu
 RUN echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"obs\"" >> /usr/share/menu/custom-docker && update-menus

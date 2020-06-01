@@ -211,13 +211,13 @@ BuildFFmpeg() {
         --enable-libvpx \
         --enable-libx264 \
         --enable-nonfree \
-        --enable-nvenc \
         --enable-pic \
         --enable-libxcb \
         --extra-ldexeflags=-pie \
         --enable-shared
     make -j${cpus}
     make install
+        # --enable-nvenc \
 
     # Below is the configuration of ffmpeg as provided in Ubuntu 18.10
 
@@ -315,7 +315,8 @@ BuildOBS() {
     fi
     mkdir -p build
     cd build
-    cmake -DUNIX_STRUCTURE=1 -DCMAKE_INSTALL_PREFIX=$build_dir ..
+    LD_LIBRARY_PATH="${build_dir}/lib":\$LD_LIBRARY_PATH cmake -DUNIX_STRUCTURE=1 -DCMAKE_INSTALL_PREFIX=$build_dir ..
+    # cmake -DUNIX_STRUCTURE=1 -DCMAKE_INSTALL_PREFIX=$build_dir ..
     make -j${cpus}
     make install
 }
