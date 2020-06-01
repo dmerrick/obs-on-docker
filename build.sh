@@ -4,4 +4,4 @@ set -ex
 
 NAME="obs-on-docker"
 
-docker build -t $NAME .
+docker build -t $NAME -f Dockerfile.new .
