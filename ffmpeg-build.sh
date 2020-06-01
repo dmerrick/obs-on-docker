@@ -5,6 +5,7 @@
 # to suit your needs.
 
 #Authors:
+#   Dana Merrick <dana.merrick@gmail.com>
 #   Linux GameCast ( http://linuxgamecast.com/ )
 #   Mathieu Comandon <strider@strycore.com>
 
@@ -85,8 +86,12 @@ InstallNvidiaSDK() {
 InstallNvCodecIncludes() {
     echo "Installing Nv codec headers from https://github.com/FFmpeg/nv-codec-headers"
     cd "$source_dir"
-    git clone https://github.com/FFmpeg/nv-codec-headers
-    cd nv-codec-headers
+    wget -4 https://github.com/FFmpeg/nv-codec-headers/archive/master.zip
+    unzip master.zip
+    rm master.zip
+    cd nv-codec-headers-master
+    # git clone https://github.com/FFmpeg/nv-codec-headers
+    # cd nv-codec-headers
     cp -a include/ffnvcodec "$inc_dir"
 }
 
