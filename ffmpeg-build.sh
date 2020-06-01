@@ -119,9 +119,10 @@ BuildYasm() {
 BuildX264() {
     echo "Compiling libx264"
     cd $source_dir
-    wget -4 http://download.videolan.org/pub/x264/snapshots/last_x264.tar.bz2
-    tar xjf last_x264.tar.bz2
-    cd x264-snapshot*
+    x264_version="x264-snapshot-20191217-2245-stable"
+    wget -4 https://download.videolan.org/x264/snapshots/${x264_version}.tar.bz2
+    tar xjf ${x264_version}.tar.bz2
+    cd ${x264_version}
     ./configure --prefix="$build_dir" --bindir="$bin_dir" --enable-pic --enable-shared
     make -j${cpus}
     make install
