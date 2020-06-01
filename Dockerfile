@@ -66,7 +66,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && ./ffmpeg-build.sh --dest /opt/ffmpeg-nvenc --obs
 
 # add OBS to the right-click menu
-RUN echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"/root/obs.sh\"" >> /usr/share/menu/custom-docker && update-menus
+RUN echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"/opt/ffmpeg-nvenc/scripts/obs.sh\"" >> /usr/share/menu/custom-docker && update-menus
 
 # set up stream key and scenes
 RUN mkdir -p /root/.config/obs-studio/basic/profiles/Untitled/ /root/.config/obs-studio/basic/scenes/
