@@ -11,6 +11,6 @@ docker run -it --rm \
   -p 5900:5900 \
   -p 5901:5901 \
   $NAME
-#  tail -f /root/.config/obs-studio/logs/*.txt
 
 #TODO: tail the obs log here?
+#  tail -f /root/.config/obs-studio/logs/*.txt
