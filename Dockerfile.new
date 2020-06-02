@@ -5,21 +5,63 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && apt-get install -y \
       build-essential \
+      checkinstall \
       cmake \
       fluxbox \
       git \
+      libasound2-dev \
+      libavcodec-dev \
+      libavdevice-dev \
+      libavfilter-dev \
+      libavformat-dev \
+      libavutil-dev \
+      libcurl4-openssl-dev \
+      libfdk-aac-dev \
+      libfontconfig-dev \
+      libfreetype6-dev \
+      libgl1-mesa-dev \
+      libjack-jackd2-dev \
+      libjansson-dev \
+      libluajit-5.1-dev \
+      libmbedtls-dev \
+      libpulse-dev \
+      libqt5svg5-dev \
+      libqt5svg5-dev\
+      libqt5x11extras5-dev \
+      libspeexdsp-dev \
+      libswresample-dev \
+      libswscale-dev \
+      libudev-dev \
+      libv4l-dev \
+      libvlc-dev \
+      libx11-dev \
+      libx11-xcb-dev \
+      libx264-dev \
+      libxcb-randr0-dev \
+      libxcb-shm0-dev \
+      libxcb-xfixes0-dev \
+      libxcb-xinerama0-dev \
+      libxcb1-dev \
+      libxcomposite-dev \
+      libxinerama-dev \
       net-tools \
-      python \
-      python-numpy \
+      pkg-config \
+      python3-dev \
+      qtbase5-dev \
       scrot \
       software-properties-common \
+      swig \
       tigervnc-standalone-server \
       ubuntu-drivers-common \
-      qtbase5-dev \
       vim \
+      wget \
       xterm \
+      zlib1g-dev \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
+
+# pulseaudio dev, freetype-dev, fontconfig-dev, mbedtls, mbedtls-dev
+
 
 # nvidia-driver-440 - distro non-free recommended
 # nvidia-driver-435 - distro non-free
@@ -48,17 +90,39 @@ RUN echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"Xterm\" 
 #     && apt-get clean -y \
 #     && rm -rf /var/lib/apt/lists/*
 
+# -- Could NOT find Libv4l2 (missing: V4L2_LIB V4L2_INCLUDE_DIR)
+# -- libv4l2 not found, disabling v4l2 plugin
+# -- Could NOT find PkgConfig (missing: PKG_CONFIG_EXECUTABLE)
+# -- JACK Audio Connection Kit not found, disabling JACK plugin
+# -- Could NOT find ALSA (missing: ALSA_LIBRARY ALSA_INCLUDE_DIR)
+# -- ALSA not found, disabling ALSA plugin
+# -- obs-browser submodule not found!  Please fetch submodules.  obs-browser plugin disabled.
+# -- obs-vst submodule not found!  Please fetch/update submodules.  obs-vst plugin disabled.
+# -- Libfdk not found - obs-libfdk plugin disabled
+# -- Found FFmpeg: /usr/lib/x86_64-linux-gnu/libavcodec.so (found version "57.107.100") found components:  avcodec avfilter avdevice avutil swscale avformat swresample
+# -- Found FFmpeg: /usr/lib/x86_64-linux-gnu/libavcodec.so (found version "57.107.100") found components:  avcodec avutil avformat
+# -- Could NOT find MbedTLS (missing: MBEDTLS_LIBRARIES MBEDTLS_INCLUDE_DIRS)
+# CMake Warning at plugins/obs-outputs/CMakeLists.txt:13 (message):
+#   mbedTLS or zlib was not found, RTMPS will be auto-disabled
+
+
+
 RUN cd /tmp \
   && git clone https://github.com/obsproject/obs-studio \
-  && mkdir -p obs-studio/build \
-  && cd obs-studio/build \
-  && FFmpegPath=/usr/local/bin/ffmpeg cmake -DUNIX_STRUCTURE=1 -DCMAKE_INSTALL_PREFIX=/usr/local .. \
-  && make -j4 \
-  && make install
-  # && LD_LIBRARY_PATH="/usr/lib:${LD_LIBRARY_PATH}" cmake -DUNIX_STRUCTURE=1 -DCMAKE_INSTALL_PREFIX=/usr .. \
-  # && LD_LIBRARY_PATH=/usr/local/lib FFMPEG_INCLUDE_DIRS="/opt/ffmpeg/lib:/opt/ffmpeg/lib64" cmake -DUNIX_STRUCTURE=1 -DCMAKE_INSTALL_PREFIX=/usr/local .. \
-# add OBS to the right-click menu
-RUN echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"obs\"" >> /usr/share/menu/custom-docker && update-menus
+  && cd obs-studio \
+  && wget https://cdn-fastly.obsproject.com/downloads/cef_binary_3770_linux64.tar.bz2 \
+  && tar xjf cef_binary_3770_linux64.tar.bz2 \
+  && rm cef_binary_3770_linux64.tar.bz2 \
+  && git clone https://github.com/obsproject/obs-browser \
+  && echo "add_subdirectory(obs-browser)" >> ./plugins/CMakeLists.txt \
+  && mkdir -p build \
+  && cd build \
+  true
+  # && cmake -DUNIX_STRUCTURE=1 -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="../cef_binary_3770_linux64" .. \
+  # && make -j4 \
+  # && make install \
+  # && echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"obs\"" >> /usr/share/menu/custom-docker \
+  # && update-menus
 
 # set up stream key and scenes
 # RUN mkdir -p /root/.config/obs-studio/basic/profiles/Untitled/ /root/.config/obs-studio/basic/scenes/
