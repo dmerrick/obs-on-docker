@@ -108,6 +108,14 @@ RUN cd /tmp \
   #TODO: possibly add obs-vst?
   # && git clone https://github.com/obsproject/obs-vst ./plugins/obs-vst \
 
+# COPY Video_Codec_SDK_9.1.23.zip /root/
+# COPY ffmpeg-build.sh /root/
+# RUN export DEBIAN_FRONTEND=noninteractive \
+#   && apt-get update \
+#   && cd /root \
+#   && chmod +x ./ffmpeg-build.sh \
+#   && ./ffmpeg-build.sh --dest /opt/ffmpeg-nvenc --obs
+
 # set up stream key and scenes
 RUN mkdir -p /root/.config/obs-studio/basic/profiles/Untitled/ /root/.config/obs-studio/basic/scenes/
 COPY obs-profile/basic.ini /root/.config/obs-studio/basic/profiles/Untitled
