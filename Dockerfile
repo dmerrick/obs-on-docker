@@ -100,7 +100,7 @@ RUN cd /tmp \
   && mkdir -p build \
   && cd build \
   && cmake -DUNIX_STRUCTURE=1 -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="../cef_binary_3770_linux64" .. \
-  && make \
+  && make -j2 \
   && make install \
   && echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"obs\"" >> /usr/share/menu/custom-docker \
   && update-menus
@@ -109,16 +109,19 @@ RUN cd /tmp \
   # && git clone https://github.com/obsproject/obs-vst ./plugins/obs-vst \
 
 # set up stream key and scenes
-# RUN mkdir -p /root/.config/obs-studio/basic/profiles/Untitled/ /root/.config/obs-studio/basic/scenes/
-# COPY obs-profile/basic.ini /root/.config/obs-studio/basic/profiles/Untitled
-# COPY obs-profile/service.json /root/.config/obs-studio/basic/profiles/Untitled
-# COPY Dashcam_Scenes.linux.json /root/.config/obs-studio/basic/scenes/Untitled.json
+RUN mkdir -p /root/.config/obs-studio/basic/profiles/Untitled/ /root/.config/obs-studio/basic/scenes/
+COPY obs-profile/basic.ini /root/.config/obs-studio/basic/profiles/Untitled
+COPY obs-profile/service.json /root/.config/obs-studio/basic/profiles/Untitled
+COPY Dashcam_Scenes.linux.json /root/.config/obs-studio/basic/scenes/Untitled.json
+COPY obs-profile/global.ini /root/.config/obs-studio/global.ini
 #TODO: instead of naming these both Untitled, edit ~/.config/obs-studio/global.ini
 
 # Copy various files to their respective places
 COPY container_startup.sh /opt/container_startup.sh
 COPY x11vnc_entrypoint.sh /opt/x11vnc_entrypoint.sh
 # Subsequent images can put their scripts to run at startup here
-RUN mkdir /opt/startup_scripts
+RUN mkdir /opt/startup_scripts \
+  && echo "#!/usr/bin/env bash\nobs --startstreaming" > /opt/startup_scripts/start-obs.sh \
+  && chmod +x /opt/startup_scripts/start-obs.sh
 
 ENTRYPOINT ["/opt/container_startup.sh"]
