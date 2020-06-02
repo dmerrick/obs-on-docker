@@ -1,5 +1,8 @@
 FROM jrottenberg/ffmpeg:4.2-nvidia-cuda9.2
 
+# RUN echo "Package: libfreetype6\nPin: release *\nPin-Priority: -1" > /etc/apt/preferences.d/libfreetype6 \
+#   && echo "Package: libfreetype6-dev\nPin: release *\nPin-Priority: -1" > /etc/apt/preferences.d/libfreetype6-dev
+
 # install dependencies
 RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
@@ -18,12 +21,12 @@ RUN export DEBIAN_FRONTEND=noninteractive \
       libcurl4-openssl-dev \
       libfdk-aac-dev \
       libfontconfig-dev \
-      libfreetype6-dev \
       libgl1-mesa-dev \
       libjack-jackd2-dev \
       libjansson-dev \
       libluajit-5.1-dev \
       libmbedtls-dev \
+      libnss3-dev \
       libpulse-dev \
       libqt5svg5-dev \
       libqt5svg5-dev\
@@ -60,9 +63,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
-# pulseaudio dev, freetype-dev, fontconfig-dev, mbedtls, mbedtls-dev
-
-
 # nvidia-driver-440 - distro non-free recommended
 # nvidia-driver-435 - distro non-free
 # nvidia-driver-390 - distro non-free
@@ -90,39 +90,24 @@ RUN echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"Xterm\" 
 #     && apt-get clean -y \
 #     && rm -rf /var/lib/apt/lists/*
 
-# -- Could NOT find Libv4l2 (missing: V4L2_LIB V4L2_INCLUDE_DIR)
-# -- libv4l2 not found, disabling v4l2 plugin
-# -- Could NOT find PkgConfig (missing: PKG_CONFIG_EXECUTABLE)
-# -- JACK Audio Connection Kit not found, disabling JACK plugin
-# -- Could NOT find ALSA (missing: ALSA_LIBRARY ALSA_INCLUDE_DIR)
-# -- ALSA not found, disabling ALSA plugin
-# -- obs-browser submodule not found!  Please fetch submodules.  obs-browser plugin disabled.
-# -- obs-vst submodule not found!  Please fetch/update submodules.  obs-vst plugin disabled.
-# -- Libfdk not found - obs-libfdk plugin disabled
-# -- Found FFmpeg: /usr/lib/x86_64-linux-gnu/libavcodec.so (found version "57.107.100") found components:  avcodec avfilter avdevice avutil swscale avformat swresample
-# -- Found FFmpeg: /usr/lib/x86_64-linux-gnu/libavcodec.so (found version "57.107.100") found components:  avcodec avutil avformat
-# -- Could NOT find MbedTLS (missing: MBEDTLS_LIBRARIES MBEDTLS_INCLUDE_DIRS)
-# CMake Warning at plugins/obs-outputs/CMakeLists.txt:13 (message):
-#   mbedTLS or zlib was not found, RTMPS will be auto-disabled
-
-
-
 RUN cd /tmp \
   && git clone https://github.com/obsproject/obs-studio \
   && cd obs-studio \
   && wget https://cdn-fastly.obsproject.com/downloads/cef_binary_3770_linux64.tar.bz2 \
   && tar xjf cef_binary_3770_linux64.tar.bz2 \
   && rm cef_binary_3770_linux64.tar.bz2 \
-  && git clone https://github.com/obsproject/obs-browser \
-  && echo "add_subdirectory(obs-browser)" >> ./plugins/CMakeLists.txt \
+  && git clone https://github.com/obsproject/obs-browser ./plugins/obs-browser \
   && mkdir -p build \
   && cd build \
+  && cmake -DUNIX_STRUCTURE=1 -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="../cef_binary_3770_linux64" .. \
+  && make || true \
   true
-  # && cmake -DUNIX_STRUCTURE=1 -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="../cef_binary_3770_linux64" .. \
-  # && make -j4 \
   # && make install \
   # && echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"obs\"" >> /usr/share/menu/custom-docker \
   # && update-menus
+
+  #TODO: possibly add obs-vst?
+  # && git clone https://github.com/obsproject/obs-vst ./plugins/obs-vst \
 
 # set up stream key and scenes
 # RUN mkdir -p /root/.config/obs-studio/basic/profiles/Untitled/ /root/.config/obs-studio/basic/scenes/
