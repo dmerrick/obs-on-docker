@@ -1,4 +1,4 @@
-FROM jrottenberg/ffmpeg:4.2-nvidia-cuda9.2
+FROM my-ffmpeg:latest
 
 # RUN echo "Package: libfreetype6\nPin: release *\nPin-Priority: -1" > /etc/apt/preferences.d/libfreetype6 \
 #   && echo "Package: libfreetype6-dev\nPin: release *\nPin-Priority: -1" > /etc/apt/preferences.d/libfreetype6-dev
@@ -100,11 +100,10 @@ RUN cd /tmp \
   && mkdir -p build \
   && cd build \
   && cmake -DUNIX_STRUCTURE=1 -DBUILD_BROWSER=ON -DCEF_ROOT_DIR="../cef_binary_3770_linux64" .. \
-  && make || true \
-  true
-  # && make install \
-  # && echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"obs\"" >> /usr/share/menu/custom-docker \
-  # && update-menus
+  && make \
+  && make install \
+  && echo "?package(bash):needs=\"X11\" section=\"DockerCustom\" title=\"OBS Screencast\" command=\"obs\"" >> /usr/share/menu/custom-docker \
+  && update-menus
 
   #TODO: possibly add obs-vst?
   # && git clone https://github.com/obsproject/obs-vst ./plugins/obs-vst \
