@@ -13,3 +13,8 @@ adapted from:
    * for inspiration
 * https://github.com/jrottenberg/ffmpeg
    * for a copy of `ffmpeg` with nvenc built in
+
+
+to go over:
+* https://www.nvidia.com/en-us/geforce/guides/broadcasting-guide/
+* https://obsproject.com/wiki/General-Performance-and-Encoding-Issues
