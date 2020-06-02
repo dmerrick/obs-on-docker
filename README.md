@@ -13,6 +13,9 @@ adapted from:
    * for inspiration
 * https://github.com/jrottenberg/ffmpeg
    * for a copy of `ffmpeg` with nvenc built in
+   * I had to rebuild this with a version of Freetype that matches the one in apt
+
+
 
 
 to go over:
